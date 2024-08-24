@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Weapon Data</title>
+  <link rel="stylesheet" href="index.css">
+</head>
+<body>
+
+<!-- Main Content -->
+<div class="main-content container">
+  <h2>Weapon Data</h2>
+  <input type="text" id="dataInput" placeholder="Enter data like: #ціль Р028.1.583...">
+  <div>
+    <button style="border: blueviolet solid 2px; width: 200px" onclick="extractData()">Format</button>
+  </div>
+  <div class="output-container">
+    <div class="output" id="output"></div>
+  </div>
+  <div>
+    <button style="width: 200px" id="copyButton" onclick="copyToClipboard()">Copy</button>
+  </div>
+  <div id="notification" class="notification"></div>
+</div>
+
+<script>
+  function extractData() {
+    const input = document.getElementById('dataInput').value;
+    const outputElement = document.getElementById('output');
+
+    const coordinateRegex = /(\d{2}-\d{5}) (\d{2}-\d{5})/;
+    const nameRegex = /([РАМрам])028.\d.(\d{3}|\d{4})/;
+
+    const coordinateMatch = input.match(coordinateRegex);
+    const nameMatch = input.match(nameRegex);
+
+    console.log(coordinateMatch)
+    console.log(nameMatch)
+
+    if (coordinateMatch && nameMatch) {
+      const x = `X${coordinateMatch[1]}`;
+      const y = `Y${coordinateMatch[2]}`;
+      const name = nameMatch[0];
+
+      const result = `${x}\n${y}\n${name}`;
+
+      outputElement.textContent = result.trim();
+      document.getElementById('dataInput').value = ''
+    } else {
+      return null;
+    }
+  }
+
+  function copyToClipboard() {
+    const outputElement = document.getElementById('output');
+    const textToCopy = outputElement.textContent;
+
+    // Create a temporary textarea element to hold the text
+    const tempTextarea = document.createElement('textarea');
+    tempTextarea.value = textToCopy;
+    document.body.appendChild(tempTextarea);
+
+    // Select and copy the text
+    tempTextarea.select();
+    document.execCommand('copy');
+
+    // Remove the temporary textarea
+    document.body.removeChild(tempTextarea);
+
+    showNotification('Result copied to clipboard!');
+  }
+
+  function showNotification(message) {
+    const notification = document.getElementById('notification');
+    notification.textContent = message;
+    notification.classList.add('visible');
+
+    // Hide the notification after 3 seconds
+    setTimeout(() => {
+      notification.classList.remove('visible');
+    }, 3000);
+  }
+</script>
+</body>
+</html>
